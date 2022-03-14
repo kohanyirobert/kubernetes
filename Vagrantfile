@@ -54,6 +54,11 @@ Vagrant.configure("2") do |config|
     config.vm.define node.char do |config|
       config.vm.hostname = node.hostname
       config.vm.network "private_network", ip: node.ip
+      config.vm.provider "virtualbox" do |vb|
+        vb.cpus = 2
+        vb.memory = 2048
+        vb.linked_clone = true
+      end
       config.vm.provision "shell",
         name: "kubeadm-init.sh (#{node.hostname})",
         privileged: false,
