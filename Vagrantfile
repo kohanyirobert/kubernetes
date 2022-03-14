@@ -25,12 +25,6 @@ Vagrant.configure("2") do |config|
   config.vm.box = "ubuntu/bionic64"
   config.vm.box_version = "20220310.0.0"
 
-  config.vm.provider "virtualbox" do |vb|
-    vb.cpus = 2
-    vb.memory = "2048"
-    vb.linked_clone = true
-  end
-
   config.vm.provision "shell", name: "id_rsa.sh", privileged: false, path: "id_rsa.sh"
   nodes.each do |node|
     config.vm.provision "shell",
@@ -42,25 +36,24 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", name: "containerd.sh", privileged: false, path: "containerd.sh"
   config.vm.provision "shell", name: "kubeadm.sh", privileged: false, path: "kubeadm.sh"
   
-  # Provision and install kubeadm on worker nodes before control-plane nodes
+  # First provision worker nodes
   nodes.filter { |n| !n.control_plane? }.each do |node|
     config.vm.define node.char do |config|
       config.vm.hostname = node.hostname
       config.vm.network "private_network", ip: node.ip
+      config.vm.provider "virtualbox" do |vb|
+        vb.cpus = 1
+        vb.memory = 512
+        vb.linked_clone = true
+      end
     end
   end
   
-  # Provisioning kubeadm on control-plane nodes
+  # Then provisioning control-plane nodes
   nodes.filter { |n| n.control_plane? }.each do |node|
     config.vm.define node.char do |config|
       config.vm.hostname = node.hostname
       config.vm.network "private_network", ip: node.ip
-    end
-  end
-
-  # Initializing control-plane nodes and make worker nodes join the cluster
-  nodes.filter {|n| n.control_plane?}.each do |node|
-    config.vm.define node.char do |config|
       config.vm.provision "shell",
         name: "kubeadm-init.sh (#{node.hostname})",
         privileged: false,
