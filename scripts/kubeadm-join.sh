@@ -4,8 +4,9 @@ then
   ssh -o StrictHostKeyChecking=no vagrant@$1 -- sudo $(kubeadm token create --print-join-command)
   until kubectl wait node $1 --for=condition=Ready
   do
-    echo "warning: node doesn't exist yet"
+    echo "warning: resources don't exist"
     sleep 1
   done
+  echo "info: resources exist"
   kubectl wait node $1 --for=condition=Ready --timeout=120s
 fi

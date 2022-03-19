@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smoke-test
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      example: smoke-test
+  template:
+    metadata:
+      labels:
+        example: smoke-test
+    spec:
+      containers:
+      - name: smoke-test
+        image: traefik/whoami
+        ports:
+        - containerPort: 80

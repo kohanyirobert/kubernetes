@@ -1,5 +1,4 @@
 # Installs containerd onto a node without installing Docker or anything related
-
 # https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd
 cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
 overlay
