@@ -20,8 +20,9 @@ data:
     address-pools:
     - name: default
       protocol: layer2
+      # The address range is shared by the VirtualBox VM nodes, e.g. 172.16.0.100
       addresses:
-      - 172.31.0.1-172.31.255.254
+      - 172.16.0.100-172.16.255.254
 EOF
   until kubectl wait pod --all --for=condition=Ready --namespace metallb-system
   do

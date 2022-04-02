@@ -4,6 +4,7 @@ class Node
     @char = char
     @hostname = "node-#{@char}"
     @ip = "172.16.0.#{@char.ord}"
+    @netmask = "255.255.0.0"
     @control_plane = control_plane
   end
 
@@ -11,7 +12,7 @@ class Node
     @control_plane
   end
 
-  attr_reader :char, :hostname, :ip
+  attr_reader :char, :hostname, :ip, :netmask
 end
 
 # Nodes in the cluster, order doesn't matter
@@ -24,8 +25,6 @@ nodes = [
 Vagrant.configure("2") do |config|
   config.vm.box = "ubuntu/focal64"
   config.vm.box_version = "20220315.0.0"
-  config.vbguest.no_install = true
-  config.vbguest.auto_reboot = false
 
   config.vm.provision "shell", name: "multipath.sh", privileged: false, path: "scripts/multipath.sh"
   config.vm.provision "shell", name: "id_rsa.sh", privileged: false, path: "scripts/id_rsa.sh"
@@ -43,7 +42,7 @@ Vagrant.configure("2") do |config|
   nodes.filter { |n| !n.control_plane? }.each do |node|
     config.vm.define node.char do |config|
       config.vm.hostname = node.hostname
-      config.vm.network "private_network", ip: node.ip
+      config.vm.network "private_network", ip: node.ip, netmask: node.netmask
       config.vm.provider "virtualbox" do |vb|
         vb.cpus = 2
         vb.memory = 1024
@@ -56,7 +55,7 @@ Vagrant.configure("2") do |config|
   nodes.filter { |n| n.control_plane? }.each do |node|
     config.vm.define node.char do |config|
       config.vm.hostname = node.hostname
-      config.vm.network "private_network", ip: node.ip
+      config.vm.network "private_network", ip: node.ip, netmask: node.netmask
       config.vm.provider "virtualbox" do |vb|
         vb.cpus = 2
         vb.memory = 2048
@@ -77,7 +76,11 @@ Vagrant.configure("2") do |config|
       end
       config.vm.provision "shell", name: "metallb.sh", privileged: false, path: "scripts/metallb.sh"
       config.vm.provision "shell", name: "helm.sh", privileged: false, path: "scripts/helm.sh"
+      config.vm.provision "shell", name: "cfssl.sh", privileged: false, path: "scripts/cfssl.sh"
       config.vm.provision "shell", name: "nginx-ingress.sh", privileged: false, path: "scripts/nginx-ingress.sh"
+      config.vm.provision "shell", name: "kubectl.sh", privileged: false, path: "scripts/kubectl.sh"
+      config.vm.provision "shell", name: "dashboard.sh", privileged: false, path: "scripts/dashboard.sh"
     end
   end
 end
+  
