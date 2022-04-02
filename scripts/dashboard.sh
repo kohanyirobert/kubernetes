@@ -28,7 +28,7 @@ then
   metadata:
     name: vagrant
     namespace: kubernetes-dashboard
-  EOF
+EOF
   kubectl apply -f - << EOF
   apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRoleBinding
@@ -42,28 +42,6 @@ then
   - kind: ServiceAccount
     name: vagrant
     namespace: kubernetes-dashboard
-  EOF
-  kubectl apply -f - << EOF
-  apiVersion: networking.k8s.io/v1
-  kind: Ingress
-  metadata:
-    name: dashboard-ingress
-    namespace: kubernetes-dashboard
-    annotations:
-      nginx.ingress.kubernetes.io/rewrite-target: /
-  spec:
-    ingressClassName: nginx
-    rules:
-    - http:
-        paths:
-        - path: /testpath
-          pathType: Prefix
-          backend:
-            service:
-              name: test
-              port:
-                number: 80
-
 EOF
 
   sleep 3
