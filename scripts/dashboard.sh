@@ -1,10 +1,15 @@
 # Installs Kubernetes dashboard and configures access as per the default documentation here: https://github.com/kubernetes/dashboard/
 # Notes:
 # - the token needed to access the dashboard is printed to standard output
-# - run the following to access the service from the host machine
+# - there are several ways to access the dashboard from outside localhost
+#   1. via proxy (which is subpar)
+#   1. via port-forward
 #   
 #     kubectl port-forward -n kubernetes-dashboard service/kubernetes-dashboard 8443:443 --address 172.16.0.97
-#
+#   1. edit the kubernetes-dashboard service's definition and
+#     - add an external IP (e.g. add an `externalIPs` array to the YAML and the node's IP)
+#     - change the ClusterIP type of the service to NodePort and access the service using the allocated dynamic port via HTTPS
+#     - change the ClusterIP type of the service to LoadBalancer and do the same as above but without the dynamic port
 dashboard_version=2.5.1
 if ! kubectl wait pod --all --for=condition=Ready --namespace kubernetes-dashboard --timeout=0s
 then
