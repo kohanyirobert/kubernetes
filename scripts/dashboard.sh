@@ -64,9 +64,7 @@ EOF
   sleep 3
 fi
 
-
 sa_secret_name=$(kubectl get sa vagrant -n kubernetes-dashboard -o jsonpath="{.secrets[0].name}")
 sa_secret=$(kubectl get secret $sa_secret_name -n kubernetes-dashboard)
 token=$(kubectl get secret $sa_secret_name -n kubernetes-dashboard -o go-template="{{.data.token | base64decode}}")
-
 echo $token
