@@ -1,4 +1,3 @@
-# Class to hold node information for easier scripting
 class Node
   def initialize(char, control_plane=false)
     @char = char
@@ -15,12 +14,16 @@ class Node
   attr_reader :char, :hostname, :ip, :netmask
 end
 
-# Nodes in the cluster, order doesn't matter
-nodes = [
+control_plane_nodes = [
   Node.new("a", true),
+]
+
+worker_nodes = [
   Node.new("b"),
   Node.new("c"),
 ]
+
+all_nodes = worker_nodes + control_plane_nodes
 
 Vagrant.configure("2") do |config|
   config.vm.box = "ubuntu/focal64"
@@ -28,18 +31,19 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "shell", name: "multipath.sh", privileged: false, path: "scripts/multipath.sh"
   config.vm.provision "shell", name: "id_rsa.sh", privileged: false, path: "scripts/id_rsa.sh"
-  nodes.each do |node|
+
+  all_nodes.each do |node|
     config.vm.provision "shell",
       name: "hosts.sh",
       privileged: false,
       path: "scripts/hosts.sh",
       args: [node.hostname, node.ip]
   end
+
   config.vm.provision "shell", name: "containerd.sh", privileged: false, path: "scripts/containerd.sh"
   config.vm.provision "shell", name: "kubeadm.sh", privileged: false, path: "scripts/kubeadm.sh"
-  
-  # First provision worker nodes
-  nodes.filter { |n| !n.control_plane? }.each do |node|
+
+  worker_nodes.each do |node|
     config.vm.define node.char do |config|
       config.vm.hostname = node.hostname
       config.vm.network "private_network", ip: node.ip, netmask: node.netmask
@@ -47,12 +51,12 @@ Vagrant.configure("2") do |config|
         vb.cpus = 2
         vb.memory = 1024
         vb.linked_clone = true
+        vb.customize ["modifyvm", :id, "--vram", 16]
       end
     end
   end
-  
-  # Then provisioning control-plane nodes
-  nodes.filter { |n| n.control_plane? }.each do |node|
+
+  control_plane_nodes.each do |node|
     config.vm.define node.char do |config|
       config.vm.hostname = node.hostname
       config.vm.network "private_network", ip: node.ip, netmask: node.netmask
@@ -60,6 +64,7 @@ Vagrant.configure("2") do |config|
         vb.cpus = 2
         vb.memory = 2048
         vb.linked_clone = true
+        vb.customize ["modifyvm", :id, "--vram", 16]
       end
       config.vm.provision "shell",
         name: "kubeadm-init.sh (#{node.hostname})",
@@ -67,7 +72,7 @@ Vagrant.configure("2") do |config|
         path: "scripts/kubeadm-init.sh",
         args: [node.ip]
       config.vm.provision "shell", name: "calico.sh", privileged: false, path: "scripts/calico.sh"
-      nodes.select {|n| !n.control_plane?}.map {|n| n.hostname}.each do |hostname|
+      worker_nodes.map {|n| n.hostname}.each do |hostname|
         config.vm.provision "shell",
           name: "kubeadm-join.sh (#{node.hostname} -> #{hostname})",
           privileged: false,
@@ -83,4 +88,3 @@ Vagrant.configure("2") do |config|
     end
   end
 end
-  
