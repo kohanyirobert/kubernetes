@@ -4,7 +4,7 @@
 # - there are several ways to access the dashboard from outside localhost
 #   1. via proxy (which is subpar)
 #   1. via port-forward
-#   
+#
 #     kubectl port-forward -n kubernetes-dashboard service/kubernetes-dashboard 8443:443 --address 172.16.0.97
 #   1. edit the kubernetes-dashboard service's definition and
 #     - add an external IP (e.g. add an `externalIPs` array to the YAML and the node's IP)
@@ -47,7 +47,18 @@ EOF
   sleep 3
 fi
 
-sa_secret_name=$(kubectl get sa vagrant -n kubernetes-dashboard -o jsonpath="{.secrets[0].name}")
-sa_secret=$(kubectl get secret $sa_secret_name -n kubernetes-dashboard)
-token=$(kubectl get secret $sa_secret_name -n kubernetes-dashboard -o go-template="{{.data.token | base64decode}}")
+kubectl patch svc \
+  --namespace kubernetes-dashboard \
+  --patch-file /vagrant/scripts/dashboard-patch.yaml \
+  kubernetes-dashboard
+
+ip=$(kubectl get svc \
+  --namespace kubernetes-dashboard \
+  -o go-template="{{ (index .status.loadBalancer.ingress 0).ip }}" \
+  kubernetes-dashboard)
+echo $ip
+
+sa_secret_name=$(kubectl get sa vagrant --namespace kubernetes-dashboard -o jsonpath="{.secrets[0].name}")
+sa_secret=$(kubectl get secret $sa_secret_name --namespace kubernetes-dashboard)
+token=$(kubectl get secret $sa_secret_name --namespace kubernetes-dashboard -o go-template="{{.data.token | base64decode}}")
 echo $token
