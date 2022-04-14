@@ -86,6 +86,14 @@ Vagrant.configure("2") do |config|
       config.vm.provision "shell", name: "kubectl.sh", privileged: false, path: "scripts/kubectl.sh"
       config.vm.provision "shell", name: "dashboard.sh", privileged: false, path: "scripts/dashboard.sh"
       config.vm.provision "shell", name: "coredns.sh", privileged: false, path: "scripts/coredns.sh"
+      config.vm.provision "shell", name: "waypoint/local-storage.sh", privileged: false, path: "scripts/waypoint/local-storage.sh"
+      worker_nodes.map {|n| n.hostname}.each do |hostname|
+        config.vm.provision "shell",
+          name: "waypoing/persistent-volumes.sh (#{node.hostname} -> #{hostname})",
+          privileged: false,
+          path: "scripts/waypoint/persistent-volumes.sh",
+          args: [hostname, "local-storage", "1Gi"]
+      end
     end
   end
 end
