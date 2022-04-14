@@ -85,6 +85,7 @@ Vagrant.configure("2") do |config|
       config.vm.provision "shell", name: "nginx-ingress.sh", privileged: false, path: "scripts/nginx-ingress.sh"
       config.vm.provision "shell", name: "kubectl.sh", privileged: false, path: "scripts/kubectl.sh"
       config.vm.provision "shell", name: "dashboard.sh", privileged: false, path: "scripts/dashboard.sh"
+      config.vm.provision "shell", name: "coredns.sh", privileged: false, path: "scripts/coredns.sh"
     end
   end
 end
