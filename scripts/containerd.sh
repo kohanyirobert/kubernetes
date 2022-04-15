@@ -32,4 +32,24 @@ sudo mkdir -p /etc/containerd
 sudo containerd config default | sudo tee /etc/containerd/config.toml
 sudo sed -i 's,SystemdCgroup = false,SystemdCgroup = true,' /etc/containerd/config.toml
 
+if ! grep --quiet '\[plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.local"\]' /etc/containerd/config.toml
+then
+  cat > /tmp/a << EOF
+        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.local"]
+          endpoint = ["http://docker.local"]
+EOF
+  sudo sed -i '/\[plugins."io.containerd.grpc.v1.cri".registry.mirrors\]/r /tmp/a' /etc/containerd/config.toml
+  rm -rf /tmp/a
+fi
+
+if ! grep --quiet '\[plugins."io.containerd.grpc.v1.cri".registry.configs."docker.local".tls\]' /etc/containerd/config.toml
+then
+  cat > /tmp/a << EOF
+        [plugins."io.containerd.grpc.v1.cri".registry.configs."docker.local".tls]
+          insecure_skip_verify = true
+EOF
+  sudo sed -i '/\[plugins."io.containerd.grpc.v1.cri".registry.configs\]/r /tmp/a' /etc/containerd/config.toml
+  rm -rf /tmp/a
+fi
+
 sudo systemctl restart containerd
