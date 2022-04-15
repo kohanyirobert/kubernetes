@@ -47,18 +47,19 @@ EOF
   sleep 3
 fi
 
-kubectl patch svc \
-  --namespace kubernetes-dashboard \
-  --patch-file /vagrant/scripts/dashboard-patch.yaml \
-  kubernetes-dashboard
+kubectl patch service --namespace kubernetes-dashboard kubernetes-dashboard --patch='
+spec:
+  type: LoadBalancer
+'
 
-ip=$(kubectl get svc \
+url=$(kubectl get svc \
   --namespace kubernetes-dashboard \
-  -o go-template="{{ (index .status.loadBalancer.ingress 0).ip }}" \
+  -o jsonpath="https://{.status.loadBalancer.ingress[0].ip}" \
   kubernetes-dashboard)
-echo $ip
 
 sa_secret_name=$(kubectl get sa vagrant --namespace kubernetes-dashboard -o jsonpath="{.secrets[0].name}")
 sa_secret=$(kubectl get secret $sa_secret_name --namespace kubernetes-dashboard)
 token=$(kubectl get secret $sa_secret_name --namespace kubernetes-dashboard -o go-template="{{.data.token | base64decode}}")
+
+echo $url
 echo $token
