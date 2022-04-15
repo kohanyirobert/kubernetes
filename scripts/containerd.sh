@@ -32,6 +32,7 @@ sudo mkdir -p /etc/containerd
 sudo containerd config default | sudo tee /etc/containerd/config.toml
 sudo sed -i 's,SystemdCgroup = false,SystemdCgroup = true,' /etc/containerd/config.toml
 
+# https://stackoverflow.com/a/67310470/433835
 if ! grep --quiet '\[plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.local"\]' /etc/containerd/config.toml
 then
   cat > /tmp/a << EOF
