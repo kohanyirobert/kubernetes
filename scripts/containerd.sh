@@ -22,7 +22,7 @@ containerd_os=linux
 containerd_platform=amd64
 containerd_archive=cri-containerd-cni-$containerd_version-$containerd_os-$containerd_platform.tar.gz
 containerd_url=https://github.com/containerd/containerd/releases/download/v$containerd_version/$containerd_archive
-wget --timestamping $containerd_url
+wget --no-verbose --timestamping $containerd_url
 
 sudo tar --no-overwrite-dir -C / -xzf $containerd_archive
 sudo systemctl daemon-reload

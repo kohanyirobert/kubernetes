@@ -5,7 +5,7 @@ helm_os=linux
 helm_platform=amd64
 helm_archive=helm-v$helm_version-$helm_os-$helm_platform.tar.gz
 helm_url=https://get.helm.sh/$helm_archive
-wget --timestamping $helm_url
+wget --no-verbose --timestamping $helm_url
 tar xvf $helm_archive
 sudo install \
   --verbose \

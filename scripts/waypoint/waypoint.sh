@@ -5,7 +5,7 @@ waypoint_os=linux
 waypoint_platform=amd64
 waypoint_archive=waypoint_${waypoint_version}_${waypoint_os}_${waypoint_platform}.zip
 waypoint_url=https://releases.hashicorp.com/waypoint/$waypoint_version/$waypoint_archive
-wget --timestamping $waypoint_url
+wget --no-verbose --timestamping $waypoint_url
 unzip -f $waypoint_archive
 sudo install \
   --verbose \
