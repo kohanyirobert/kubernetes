@@ -1,4 +1,5 @@
-sudo apt-get install --yes unzip
+namespace=$1
+
 waypoint_version=0.8.1
 waypoint_os=linux
 waypoint_platform=amd64
@@ -14,12 +15,21 @@ kubectl apply -f - << EOF
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: waypoint
+  name: $namespace
 EOF
 
 waypoint install \
   -platform=kubernetes \
   -accept-tos \
-  -k8s-namespace=waypoint \
+  -k8s-namespace=$namespace \
   -k8s-storageclassname=local-storage \
   -k8s-storage-request=1Gi
+
+url=$(kubectl get service \
+  --namespace=$namespace \
+  -o jsonpath='https://{.items[0].status.loadBalancer.ingress[0].ip}:{.items[0].spec.ports[?(@.name=="http")].targetPort}')
+
+token=$(waypoint user token)
+
+echo $url
+echo $token

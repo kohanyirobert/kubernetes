@@ -92,8 +92,13 @@ Vagrant.configure("2") do |config|
           name: "waypoing/persistent-volumes.sh (#{node.hostname} -> #{hostname})",
           privileged: false,
           path: "scripts/waypoint/persistent-volumes.sh",
-          args: [hostname, "local-storage", "1Gi"]
+          args: [hostname, "waypoint", "local-storage", "1Gi"]
       end
+      config.vm.provision "shell",
+        name: "waypoint/waypoint.sh",
+        privileged: false,
+        path: "scripts/waypoint/waypoint.sh",
+        args: ["waypoint"]
     end
   end
 end
