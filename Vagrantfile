@@ -34,7 +34,7 @@ Vagrant.configure("2") do |config|
 
   all_nodes.each do |node|
     config.vm.provision "shell",
-      name: "hosts.sh",
+      name: "hosts.sh (#{node.hostname})",
       privileged: false,
       path: "scripts/hosts.sh",
       args: [node.hostname, node.ip]
