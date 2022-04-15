@@ -41,7 +41,7 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.provision "shell", name: "containerd.sh", privileged: false, path: "scripts/containerd.sh"
-  config.vm.provision "shell", name: "kubeadm.sh", privileged: false, path: "scripts/kubeadm.sh"
+  config.vm.provision "shell", name: "kubeadm/kubeadm.sh", privileged: false, path: "scripts/kubeadm/kubeadm.sh"
 
   worker_nodes.each do |node|
     config.vm.define node.char do |config|
@@ -68,16 +68,16 @@ Vagrant.configure("2") do |config|
       end
       config.vm.provision "shell", name: "common.sh", privileged: false, path: "scripts/common.sh"
       config.vm.provision "shell",
-        name: "kubeadm-init.sh (#{node.hostname})",
+        name: "kubeadm/kubeadm-init.sh (#{node.hostname})",
         privileged: false,
-        path: "scripts/kubeadm-init.sh",
+        path: "scripts/kubeadm/kubeadm-init.sh",
         args: [node.ip]
       config.vm.provision "shell", name: "calico.sh", privileged: false, path: "scripts/calico.sh"
       worker_nodes.map {|n| n.hostname}.each do |hostname|
         config.vm.provision "shell",
-          name: "kubeadm-join.sh (#{node.hostname} -> #{hostname})",
+          name: "kubeadm/kubeadm-join.sh (#{node.hostname} -> #{hostname})",
           privileged: false,
-          path: "scripts/kubeadm-join.sh",
+          path: "scripts/kubeadm/kubeadm-join.sh",
           args: [hostname]
       end
       config.vm.provision "shell", name: "metallb.sh", privileged: false, path: "scripts/metallb.sh"
