@@ -8,4 +8,7 @@ then
   mkdir -p $HOME/.kube
   sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
   sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+  mkdir -p /vagrant/.kube
+  cp $HOME/.kube/config /vagrant/.kube/config
 fi
