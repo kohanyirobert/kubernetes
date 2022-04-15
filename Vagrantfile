@@ -66,6 +66,7 @@ Vagrant.configure("2") do |config|
         vb.linked_clone = true
         vb.customize ["modifyvm", :id, "--vram", 16]
       end
+      config.vm.provision "shell", name: "common.sh", privileged: false, path: "scripts/common.sh"
       config.vm.provision "shell",
         name: "kubeadm-init.sh (#{node.hostname})",
         privileged: false,
