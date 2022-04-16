@@ -19,11 +19,11 @@ metadata:
 EOF
 
 waypoint install \
-  -platform=kubernetes \
   -accept-tos \
-  -k8s-namespace=$namespace \
+  -platform=kubernetes \
   -k8s-storageclassname=local-storage \
-  -k8s-storage-request=1Gi
+  -k8s-storage-request=1Gi \
+  -k8s-namespace=$namespace
 
 url=$(kubectl get service \
   --namespace=$namespace \
