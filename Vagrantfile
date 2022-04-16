@@ -42,6 +42,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "shell", name: "containerd.sh", privileged: false, path: "scripts/containerd.sh"
   config.vm.provision "shell", name: "kubeadm/kubeadm.sh", privileged: false, path: "scripts/kubeadm/kubeadm.sh"
+  config.vm.provision "shell", name: "openebs/iscsid.sh", privileged: false, path: "scripts/openebs/iscsid.sh"
 
   worker_nodes.each do |node|
     config.vm.define node.char do |config|
@@ -87,7 +88,7 @@ Vagrant.configure("2") do |config|
       config.vm.provision "shell", name: "kubectl.sh", privileged: false, path: "scripts/kubectl.sh"
       config.vm.provision "shell", name: "dashboard.sh", privileged: false, path: "scripts/dashboard.sh"
       config.vm.provision "shell", name: "coredns.sh", privileged: false, path: "scripts/coredns.sh"
-      config.vm.provision "shell", name: "openebs.sh", privileged: false, path: "scripts/openebs.sh"
+      config.vm.provision "shell", name: "openebs/openebs.sh", privileged: false, path: "scripts/openebs/openebs.sh"
     end
   end
 end
