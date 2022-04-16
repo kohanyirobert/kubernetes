@@ -1,4 +1,4 @@
-namespace=$1
+waypoint_namespace=waypoint
 
 waypoint_version=0.8.1
 waypoint_os=linux
@@ -15,18 +15,18 @@ kubectl apply -f - << EOF
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: $namespace
+  name: $waypoint_namespace
 EOF
 
 waypoint install \
   -accept-tos \
   -platform=kubernetes \
-  -k8s-storageclassname=local-storage \
+  -k8s-storageclassname=openebs-hostpath \
   -k8s-storage-request=1Gi \
-  -k8s-namespace=$namespace
+  -k8s-namespace=$waypoint_namespace
 
 url=$(kubectl get service \
-  --namespace=$namespace \
+  --namespace=$waypoint_namespace \
   -o jsonpath='https://{.items[0].status.loadBalancer.ingress[0].ip}:{.items[0].spec.ports[?(@.name=="http")].targetPort}')
 
 token=$(waypoint user token)
