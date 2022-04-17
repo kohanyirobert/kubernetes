@@ -81,6 +81,7 @@ Vagrant.configure("2") do |config|
           path: "scripts/kubeadm/kubeadm-join.sh",
           args: [hostname]
       end
+      config.vm.provision "shell", name: "mkcert.sh", privileged: false, path: "scripts/mkcert.sh"
       config.vm.provision "shell", name: "metallb.sh", privileged: false, path: "scripts/metallb.sh"
       config.vm.provision "shell", name: "helm.sh", privileged: false, path: "scripts/helm.sh"
       config.vm.provision "shell", name: "cfssl.sh", privileged: false, path: "scripts/cfssl.sh"
