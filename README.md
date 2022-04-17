@@ -45,3 +45,4 @@ Kubernetes setup with multi-machine Vagrant configuration via `kubeadm` and lots
 
   * Verify that the context's configuration is valid with `waypoint context verify`
   * **Verify that everything works** by generating a new token: `waypoint user token` (only generates one if everything is set up correctly)
+* Set `CAROOT=$PWD/.local/share/mkcert` and `TRUST_STORES=system` on the host machine then run `mkcert -install` to install the same root CA as `mkcert.sh` does during provisioning inside the guest

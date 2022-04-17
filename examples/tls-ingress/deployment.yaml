@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tls-ingress
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      example: tls-ingress
+  template:
+    metadata:
+      labels:
+        example: tls-ingress
+    spec:
+      containers:
+      - name: tls-ingress
+        image: traefik/whoami
+        ports:
+        - containerPort: 80
