@@ -1,5 +1,6 @@
 .vagrant/
 .kube/
+.local/
 *.log
 *.code-workspace
 id_rsa
