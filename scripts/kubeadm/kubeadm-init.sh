@@ -3,7 +3,8 @@ if [ ! -f $HOME/.kube/config ]
 then
   sudo kubeadm init \
     --apiserver-advertise-address=$1 \
-    --pod-network-cidr=192.168.0.0/16
+    --pod-network-cidr=192.168.0.0/16 \
+    --service-cidr=10.96.0.0/12
 
   mkdir -p $HOME/.kube
   sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
