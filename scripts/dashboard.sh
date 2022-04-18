@@ -51,15 +51,3 @@ kubectl patch service --namespace kubernetes-dashboard kubernetes-dashboard --pa
 spec:
   type: LoadBalancer
 '
-
-url=$(kubectl get svc \
-  --namespace kubernetes-dashboard \
-  -o jsonpath="https://{.status.loadBalancer.ingress[0].ip}" \
-  kubernetes-dashboard)
-
-sa_secret_name=$(kubectl get sa vagrant --namespace kubernetes-dashboard -o jsonpath="{.secrets[0].name}")
-sa_secret=$(kubectl get secret $sa_secret_name --namespace kubernetes-dashboard)
-token=$(kubectl get secret $sa_secret_name --namespace kubernetes-dashboard -o go-template="{{.data.token | base64decode}}")
-
-echo $url
-echo $token

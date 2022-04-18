@@ -91,6 +91,7 @@ Vagrant.configure("2") do |config|
       config.vm.provision "shell", name: "coredns.sh", privileged: false, path: "scripts/coredns.sh"
       config.vm.provision "shell", name: "openebs/openebs.sh", privileged: false, path: "scripts/openebs/openebs.sh"
       config.vm.provision "shell", name: "waypoint.sh", privileged: false, path: "scripts/waypoint.sh"
+      config.vm.provision "shell", name: "motd.sh", privileged: false, path: "scripts/motd.sh"
     end
   end
 end
